@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{% static 'login/css/register.css' %}" rel="stylesheet" type="text/css">
+    <title>注册页面</title>
+</head>
+<body>
+<div>
+<div class="form-register">
+    <form action="/register/" method="post">
+    {% csrf_token %}
+        {% if register_form.captcha.errors %}
+            <div>{{ register_form.captcha.errors }}</div>
+        {% endif %}
+        {% if message %}
+            <div>{{ message }}</div>
+        {% endif %}
+        <h2>欢迎注册</h2>
+        <div>
+            {{ register_form.username.label_tag }}
+            {{ register_form.username }}
+        </div>
+        <div>
+            {{ register_form.password1.label_tag }}
+            {{ register_form.password1 }}
+        </div>
+        <div>
+            {{ register_form.password2.label_tag }}
+            {{ register_form.password2 }}
+        </div>
+        <div>
+            {{ register_form.email.label_tag }}
+            {{ register_form.email }}
+        </div>
+        <div>
+            {{ register_form.sex.label_tag }}
+            {{ register_form.sex }}
+        </div>
+        <div>
+            {{ register_form.captcha.label_tag }}
+            {{ register_form.captcha }}
+        </div>
+            <a href="/login/">已有账号，请直接登录</a>
+            <input type="submit" value="确认注册">
+    </form>
+</div>
+</div>
+</body>
+</html>

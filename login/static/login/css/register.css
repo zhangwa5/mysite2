@@ -1,0 +1,68 @@
+html{
+    height: 100%;
+}
+body {
+    height: 100%;
+    background-color: darkcyan;
+
+}
+h2 {
+    text-align: center;
+}
+body>div:nth-child(1) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+.form-register {
+    width: 25%;
+    border-radius:5px;
+    background-color:antiquewhite;
+    padding: 10px;
+}
+/*设置用户名、密码输入框样式*/
+.form-register input[type="text"], input[type="password"], input[type="email"], input[type=""]{
+    width: 100%;
+    padding: 5px 5px;
+    margin: 5px 0;
+    display: inline-block;
+    border: 1px solid green;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+/*设置提交按钮属性*/
+.form-register input[type="submit"] {
+    width: 100%;
+    background-color: rosybrown;
+    color: black;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    /*鼠标指针放在一个元素边界范围内时所用的光标形状
+    pointer	光标呈现为指示链接的指针（一只手）*/
+    cursor:pointer;
+}
+/*光标移动到按钮处时背景色变化*/
+.form-register input[type="submit"]:hover {
+    background-color: blue;
+}
+/*设置链接的颜色*/
+.form-register a:link {
+    color:black;
+    text-decoration: none;
+
+}
+.form-register a:visited {
+    color: blue;
+    text-decoration: none;
+}
+.form-register a:hover {
+    color: green;
+    text-decoration: underline;
+}
+.form-register a:active {
+    color:red;
+    text-decoration: underline;
+}
