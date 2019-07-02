@@ -79,8 +79,8 @@ WSGI_APPLICATION = 'mysite2.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'xxx',
-        'USER': 'xxx',
+        'NAME': 'mysite2',
+        'USER': 'root',
         'PASSWORD': '123456',
         'PORT' : '3306',
         'HOST' : 'localhost',
@@ -125,3 +125,12 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+# 邮件配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'xxxxxxx@qq.com'
+EMAIL_HOST_PASSWORD = 'xxxxxxx'   #此处密码非QQ邮箱密码，是在QQ邮箱设置中设置的第三方登录邮箱的授权码
+# 注册有效期天数
+CONFIRM_DAYS = 7
+

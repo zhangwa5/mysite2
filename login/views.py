@@ -1,10 +1,31 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
+from django.conf import settings
 from . import models
 from . import forms
 import hashlib
+import datetime
 # Create your views here.
-
+# 创建确认码对象的方法
+def make_confirm_string(user):
+	now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	code = hash_code(user.name, now)
+	models.ConfirmString.objects.create(code=code, user=user)
+	return code
+# 发生确认邮件方法
+def send_email(email, code):
+	from django.core.mail import EmailMultiAlternatives
+	subject = "来自金控征信官网的注册确认邮件"
+	text_content = '''感谢注册金控征信官网，如果你看到此信息，说明你的邮箱服务器不提供HTML链接功能，请联系管理员！'''
+	html_content = '''
+                    <p>感谢注册<a href="http://{}/confirm/?code={}" target=blank>www.jkzx.com</a>，\
+                    这里是金控征信官网！</p>
+                    <p>请点击站点链接完成注册确认！</p>
+                    <p>此链接有效期为{}天！</p>
+                    '''.format('127.0.0.1:8000', code, settings.CONFIRM_DAYS)
+	msg = EmailMultiAlternatives(subject, text_content, settings.EMAIL_HOST_USER, [email])
+	msg.attach_alternative(html_content, "text/html")
+	msg.send()
 def index(request):
 	if not request.session.get('is_login', None):
 		return redirect('/login/')
@@ -25,6 +46,10 @@ def login(request):
 			except:
 				message="你输入的用户不存在！"
 				# 用户不存在的错误信息提示给用户
+				return render(request, 'login/login.html', locals())
+			# 如果用户未经过邮件确认，则不允许登录
+			if  not user.has_confirmed:
+				message = '该用户还未经过邮件确认！'
 				return render(request, 'login/login.html', locals())
 			# 如果用户验证通过后再验证密码是否正确
 			if user.password == hash_code(password):
@@ -77,6 +102,9 @@ def register(request):
 				new_user.sex = sex
 				# 保存数据至数据库
 				new_user.save()
+				# 生产注册码
+				code = make_confirm_string(new_user)
+				send_email(email, code)
 				# message = "恭喜你," + username + "已注册成功！"
 				# 注册成功，跳转到登录界面登录
 				# return render(request, 'login/login.html', locals())
@@ -99,3 +127,23 @@ def hash_code(s, salt='hfdfsd8&*&*^^%jkfsnv&%^$#%$^&*'):
 	s += salt
 	h.update(s.encode())
 	return h.hexdigest()
+def user_confirm(request):
+	code = request.GET.get('code', None)
+	message = ""
+	try:
+		confirm = models.ConfirmString.objects.get(code=code)
+	except:
+		message = "效的确认请求!"
+		return render(request, 'login/confirm.html', locals())
+	c_time = confirm.c_time
+	now = datetime.datetime.now()
+	if now > c_time + datetime.timedelta(settings.CONFIRM_DAYS):
+		confirm.user.delete()
+		message = "您的邮件已经过期！请重新注册!"
+		return render(request, 'login/confirm.html', locals())
+	else:
+		confirm.user.has_confirmed = True
+		confirm.user.save()
+		confirm.delete()
+		messgae = "感谢确认，请使用账户登录！"
+		return render(request, 'login/confirm.html', locals())
